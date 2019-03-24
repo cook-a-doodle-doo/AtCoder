@@ -8,8 +8,8 @@ import (
 )
 
 func TestMain(t *testing.T) {
-	inputString := "hoge"
-	expect := "hoge\n"
+	inputString := "9\n1 1 1 2 2 1 2 3 2"
+	expect := "1\n2\n2\n3\n1\n2\n2\n1\n1\n"
 
 	output := checker(inputString, protagonist)
 	if output != expect {

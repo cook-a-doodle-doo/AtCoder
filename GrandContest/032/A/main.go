@@ -14,7 +14,36 @@ func main() {
 
 func protagonist(r basicIO.Reader, w basicIO.Writer) {
 	io := NewIO(r, w)
-	io.PutString((io.nextString()))
+
+	a := make([]int, 0, 100)
+	b := make([]int, 0, 100)
+	length, _ := io.NextInt()
+	for i := 0; i < length; i++ {
+		v, _ := io.NextInt()
+		a = append(a, v)
+	}
+
+	count := 0
+START:
+	for i := length - count; i > 0; i-- {
+		if a[i-1] == i {
+			a = unset(a, i-1)
+			b = append(b, i)
+			count++
+			if len(a) == 0 {
+				goto DONE
+			}
+			goto START
+		}
+	}
+	io.PutInt(-1)
+	return
+
+DONE:
+	for i, _ := range b {
+		io.PutInt(b[len(b)-1-i])
+	}
+	return
 }
 
 type IO struct {
@@ -31,12 +60,12 @@ func NewIO(r basicIO.Reader, w basicIO.Writer) *IO {
 	}
 }
 
-func (io *IO) nextString() string {
+func (io *IO) NextString() string {
 	io.Scanner.Scan()
 	return io.Scanner.Text()
 }
 
-func (io *IO) nextInt() (int, error) {
+func (io *IO) NextInt() (int, error) {
 	io.Scanner.Scan()
 	i, err := strconv.Atoi(io.Scanner.Text())
 	return i, err
@@ -48,4 +77,11 @@ func (io *IO) PutInt(v int) {
 
 func (io *IO) PutString(s string) {
 	fmt.Fprintf(io.Writer, "%s\n", s)
+}
+
+func unset(s []int, i int) []int {
+	if i >= len(s) {
+		return s
+	}
+	return append(s[:i], s[i+1:]...)
 }
