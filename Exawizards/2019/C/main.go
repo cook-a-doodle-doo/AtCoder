@@ -14,10 +14,13 @@ func main() {
 
 func protagonist(reader basicIO.Reader, writer basicIO.Writer) {
 	io := NewIO(reader, writer)
-	N, _ := io.nextInt()
-	Q, _ := io.nextInt()
-	s := io.nextString()
-
+	var N int
+	var Q int
+	var str string
+	N, _ = io.nextInt()
+	Q, _ = io.nextInt()
+	str = io.nextString()
+	//	fmt.Scan(&N, &Q, &str)
 	t := make([]byte, Q)
 	d := make([]byte, Q)
 
@@ -26,17 +29,9 @@ func protagonist(reader basicIO.Reader, writer basicIO.Writer) {
 		d[i] = io.nextString()[0]
 	}
 
-	l := FlowLeft(N, Q, s, t, d)
-	if l >= N {
-		io.PutInt(0)
-		return
-	}
-	r := FlowRight(N, Q, s, t, d)
-	if r >= N {
-		io.PutInt(0)
-		return
-	}
-	io.PutInt(N - (l + r))
+	fl := FlowLeft(N, Q, str, t, d)
+	fr := FlowRight(N, Q, str, t, d)
+	io.PutInt(N - fr - fl)
 }
 
 func DriftToSection(n int, N int, Q int, str string, t []byte, d []byte) byte {
@@ -59,79 +54,48 @@ func DriftToSection(n int, N int, Q int, str string, t []byte, d []byte) byte {
 }
 
 func FlowLeft(N int, Q int, str string, t []byte, d []byte) int {
-	l := 0
-	r := N - 1
-	if !isReachTheLeft(l, N, Q, str, t, d) {
+	l, r := 0, N-1
+	tmp := DriftToSection(l, N, Q, str, t, d)
+	if tmp == 'M' || tmp == 'R' {
 		return 0
+	} else if DriftToSection(r, N, Q, str, t, d) == 'L' {
+		return N
 	}
-	for {
-		m := (l + r) / 2
-		if isReachTheLeft(m, N, Q, str, t, d) {
+
+	for (r - l) > 1 {
+		m := int((l + r) / 2)
+		switch DriftToSection(m, N, Q, str, t, d) {
+		case 'L':
 			l = m
-		} else {
+		case 'R':
+			r = m
+		case 'M':
 			r = m
 		}
-		if (r - l) <= 1 {
-			return r
-		}
 	}
-	return 1
+	return r
 }
 func FlowRight(N int, Q int, str string, t []byte, d []byte) int {
-	l := 0
-	r := N - 1
-	if !isReachTheRight(r, N, Q, str, t, d) {
+	l, r := 0, N-1
+	tmp := DriftToSection(r, N, Q, str, t, d)
+	if tmp == 'M' || tmp == 'L' {
 		return 0
+	} else if DriftToSection(l, N, Q, str, t, d) == 'R' {
+		return N
 	}
-	for {
-		m := int(float64(l+r)/2 + 0.5)
-		if isReachTheRight(m, N, Q, str, t, d) {
+
+	for (r - l) > 1 {
+		m := int((l + r) / 2)
+		switch DriftToSection(m, N, Q, str, t, d) {
+		case 'L':
+			l = m
+		case 'R':
 			r = m
-		} else {
+		case 'M':
 			l = m
 		}
-		if (r - l) <= 1 {
-			return N - l - 1
-		}
 	}
-}
-
-func isReachTheLeft(n int, N int, Q int, str string, t []byte, d []byte) bool {
-	for i := 0; i < Q; i++ {
-		if str[n] == t[i] {
-			if d[i] == 'L' {
-				n--
-			} else {
-				n++
-			}
-			if n < 0 {
-				return true
-			}
-			if N <= n {
-				return false
-			}
-		}
-	}
-	return false
-}
-
-func isReachTheRight(n int, N int, Q int, str string, t []byte, d []byte) bool {
-	for i := 0; i < Q; i++ {
-		if str[n] == t[i] {
-			if d[i] == 'L' {
-				n--
-			} else {
-				n++
-			}
-			if N <= n {
-				return true
-			}
-			if n < 0 {
-				return false
-			}
-		}
-	}
-	return false
+	return N - r
 }
 
 type IO struct {
