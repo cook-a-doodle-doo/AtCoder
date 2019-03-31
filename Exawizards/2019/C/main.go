@@ -12,45 +12,107 @@ func main() {
 	protagonist(os.Stdin, os.Stdout)
 }
 
-func protagonist(r basicIO.Reader, w basicIO.Writer) {
-	io := NewIO(r, w)
+func protagonist(reader basicIO.Reader, writer basicIO.Writer) {
+	io := NewIO(reader, writer)
 	N, _ := io.nextInt()
 	Q, _ := io.nextInt()
 	s := io.nextString()
 
-	a := make([]int, N+2)
-	for i, _ := range a {
-		a[i] = 1
-	}
-	a[0] = 0
-	a[len(a)-1] = 0
+	t := make([]byte, Q)
+	d := make([]byte, Q)
 
-	b := make([]int, N+2)
 	for i := 0; i < Q; i++ {
-		t := io.nextString()
-		d := io.nextString()
+		t[i] = io.nextString()[0]
+		d[i] = io.nextString()[0]
+	}
 
-		for i, v := range a {
-			b[i] = v
+	l := FlowLeft(N, Q, s, t, d)
+	if l >= N {
+		io.PutInt(0)
+		return
+	}
+	r := FlowRight(N, Q, s, t, d)
+	if r >= N {
+		io.PutInt(0)
+		return
+	}
+	io.PutInt(N - (l + r))
+}
+
+func FlowLeft(N int, Q int, str string, t []byte, d []byte) int {
+	l := 0
+	r := N - 1
+	if !isReachTheLeft(l, N, Q, str, t, d) {
+		return 0
+	}
+	for {
+		m := (l + r) / 2
+		if isReachTheLeft(m, N, Q, str, t, d) {
+			l = m
+		} else {
+			r = m
 		}
+		if (r - l) <= 1 {
+			return r
+		}
+	}
+	return 1
+}
+func FlowRight(N int, Q int, str string, t []byte, d []byte) int {
+	l := 0
+	r := N - 1
+	if !isReachTheRight(r, N, Q, str, t, d) {
+		return 0
+	}
+	for {
+		m := int(float64(l+r)/2 + 0.5)
+		if isReachTheRight(m, N, Q, str, t, d) {
+			r = m
+		} else {
+			l = m
+		}
+		if (r - l) <= 1 {
+			return N - l - 1
+		}
+	}
+}
 
-		fmt.Println(t, d)
-		fmt.Println(b)
-		for j := 1; j < N+1; j++ {
-			if s[j-1] == t[0] {
-				if d == "L" {
-					a[j-1] += b[j]
-					a[j] -= b[j]
-				} else {
-					a[j+1] += b[j]
-					a[j] -= b[j]
-				}
+func isReachTheLeft(n int, N int, Q int, str string, t []byte, d []byte) bool {
+	for i := 0; i < Q; i++ {
+		if str[n] == t[i] {
+			if d[i] == 'L' {
+				n--
+			} else {
+				n++
+			}
+			if n < 0 {
+				return true
+			}
+			if N <= n {
+				return false
 			}
 		}
-		fmt.Println(a)
 	}
+	return false
+}
 
-	io.PutInt(N - (a[0] + a[len(a)-1]))
+func isReachTheRight(n int, N int, Q int, str string, t []byte, d []byte) bool {
+	for i := 0; i < Q; i++ {
+		if str[n] == t[i] {
+			if d[i] == 'L' {
+				n--
+			} else {
+				n++
+			}
+			if N <= n {
+				return true
+			}
+			if n < 0 {
+				return false
+			}
+		}
+	}
+	return false
 }
 
 type IO struct {
