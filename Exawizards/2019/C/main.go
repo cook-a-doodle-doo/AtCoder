@@ -39,6 +39,25 @@ func protagonist(reader basicIO.Reader, writer basicIO.Writer) {
 	io.PutInt(N - (l + r))
 }
 
+func DriftToSection(n int, N int, Q int, str string, t []byte, d []byte) byte {
+	for i := 0; i < Q; i++ {
+		if str[n] == t[i] {
+			if d[i] == 'L' {
+				n--
+			} else {
+				n++
+			}
+			if n < 0 {
+				return 'L'
+			}
+			if n >= N {
+				return 'R'
+			}
+		}
+	}
+	return 'M'
+}
+
 func FlowLeft(N int, Q int, str string, t []byte, d []byte) int {
 	l := 0
 	r := N - 1

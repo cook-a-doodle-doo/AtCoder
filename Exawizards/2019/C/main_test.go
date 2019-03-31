@@ -37,6 +37,19 @@ func TestMain3(t *testing.T) {
 	}
 }
 
+func TestDriftToSection(t *testing.T) {
+	expect := "L"[0]
+	str := "ABC"
+	N := 3
+	tl := []byte{'A', 'B'}
+	dl := []byte{'L', 'R'}
+	Q := len(tl)
+	output := DriftToSection(0, N, Q, str, tl, dl)
+	if output != expect {
+		t.Errorf("expcet %v ,but %v", expect, output)
+	}
+}
+
 func checker(input string, f func(basicIO.Reader, basicIO.Writer)) string {
 	reader := strings.NewReader(input)
 	writer := bytes.NewBufferString("")
