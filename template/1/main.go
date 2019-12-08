@@ -36,10 +36,10 @@ func (io *IO) nextString() string {
 	return io.Scanner.Text()
 }
 
-func (io *IO) nextInt() (int, error) {
+func (io *IO) nextInt() int {
 	io.Scanner.Scan()
-	i, err := strconv.Atoi(io.Scanner.Text())
-	return i, err
+	i, _ := strconv.Atoi(io.Scanner.Text())
+	return i
 }
 
 func (io *IO) PutInt(v int) {
