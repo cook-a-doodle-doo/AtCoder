@@ -24,17 +24,32 @@ func protagonist(r basicIO.Reader, w basicIO.Writer) {
 			arr[i][j][1] = io.nextInt()
 		}
 	}
-	for i := 2 ^ N; i >= 0; i-- {
+
+	for i := 0; i < pow2(N); i++ {
+		for j := 0; j < N; j++ {
+			if i/pow2(j) != 0 {
+				continue
+			}
+			for _, v := range arr[j] {
+				if i/pow2(v[1]) == v[0] {
+					continue
+				}
+				goto HOGE
+			}
+		}
+		io.PutInt(i)
+		return
+	HOGE:
 	}
+	io.PutInt(0)
 }
 
-func isCont(arr [][][]int, s int, now int) {
-	for i := range arr {
-		for j := range arr[i] {
-			p := arr[i][j][0]
-			if 2^p
-		}
+func pow2(n int) int {
+	acc := 1
+	for i := 0; i < n; i++ {
+		acc *= 2
 	}
+	return acc
 }
 
 type IO struct {
