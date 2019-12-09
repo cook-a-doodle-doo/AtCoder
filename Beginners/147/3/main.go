@@ -25,23 +25,38 @@ func protagonist(r basicIO.Reader, w basicIO.Writer) {
 		}
 	}
 
+	max := 0
 	for i := 0; i < pow2(N); i++ {
 		for j := 0; j < N; j++ {
-			if i/pow2(j) != 0 {
+			if (i%pow2(j+1))/pow2(j) == 0 {
+				//io.PutString(fmt.Sprintf("pass:%b %d", i, j))
 				continue
 			}
 			for _, v := range arr[j] {
-				if i/pow2(v[1]) == v[0] {
+				if (i&pow2(v[0]-1) > 0) == (v[1] == 1) {
 					continue
 				}
+				//io.PutString(fmt.Sprintf("goto:%b %d v0:%d v1:%d", i, j, v[0], v[1]))
 				goto HOGE
 			}
 		}
-		io.PutInt(i)
-		return
+		if n := num(i, N); max < n {
+			max = n
+			//io.PutString(fmt.Sprintf("set:%b n:%d", i, n))
+		}
 	HOGE:
 	}
-	io.PutInt(0)
+	io.PutInt(max)
+}
+
+func num(i, N int) int {
+	acc := 0
+	for j := 0; j < N; j++ {
+		if (i%pow2(j+1))/pow2(j) == 1 {
+			acc++
+		}
+	}
+	return acc
 }
 
 func pow2(n int) int {
